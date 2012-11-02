@@ -55,7 +55,7 @@ public class PowerWidgetUtil {
     public static final String BUTTON_MEDIA_NEXT = "toggleMediaNext";
     public static final String BUTTON_LTE = "toggleLte";
     public static final String BUTTON_WIMAX = "toggleWimax";
-
+    public static final String BUTTON_FCHARGE = "toggleFastCharge";
     public static final HashMap<String, ButtonInfo> BUTTONS = new HashMap<String, ButtonInfo>();
     static {
         BUTTONS.put(BUTTON_AIRPLANE, new PowerWidgetUtil.ButtonInfo(
@@ -120,6 +120,9 @@ public class PowerWidgetUtil {
         BUTTONS.put(BUTTON_WIMAX, new PowerWidgetUtil.ButtonInfo(
                 BUTTON_WIMAX, R.string.title_toggle_wimax,
                 "com.android.systemui:drawable/stat_wimax_on"));
+        BUTTONS.put(BUTTON_FCHARGE, new PowerWidgetUtil.ButtonInfo(
+                BUTTON_FCHARGE, R.string.title_toggle_fastcharge,
+                "com.android.systemui:drawable/stat_fcharge_on"));
     }
 
     private static final String BUTTON_DELIMITER = "|";
