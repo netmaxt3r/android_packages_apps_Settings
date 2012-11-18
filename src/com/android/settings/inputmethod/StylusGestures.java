@@ -36,6 +36,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.provider.Settings;
 
@@ -53,6 +54,8 @@ public class StylusGestures extends SettingsPreferenceFragment implements
     public static final String KEY_SPEN_DOWN = "gestures_down";
     public static final String KEY_SPEN_LONG = "gestures_long";
     public static final String KEY_SPEN_DOUBLE = "gestures_double";
+    public static final String KEY_SPEN_REMOVED = "spen_removed";
+    public static final String KEY_SPEN_INSERTED = "spen_inserted";
     public static final int KEY_NO_ACTION = 1000;
     public static final String TEXT_NO_ACTION = "No Action";
 
@@ -63,6 +66,8 @@ public class StylusGestures extends SettingsPreferenceFragment implements
     private ListPreference mSwipeDown;
     private ListPreference mSwipeLong;
     private ListPreference mSwipeDouble;
+    private ListPreference mSpenInsert;
+    private ListPreference mSpenRemove;
 
     private Context mContext;
     private ContentResolver mResolver;
@@ -114,6 +119,26 @@ public class StylusGestures extends SettingsPreferenceFragment implements
                 Settings.System.GESTURES_DOUBLE_TAP);
         addApplicationEntries(mSwipeDouble, packageName);
         mSwipeDouble.setOnPreferenceChangeListener(this);
+
+        mSpenInsert =(ListPreference) findPreference(KEY_SPEN_INSERTED);
+        packageName = Settings.System.getString(mResolver,
+                Settings.System.SPEN_INSERTED);
+        addApplicationEntries(mSpenInsert, packageName,true);
+        mSpenInsert.setOnPreferenceChangeListener(this);
+
+        mSpenRemove =(ListPreference) findPreference(KEY_SPEN_REMOVED);
+        packageName = Settings.System.getString(mResolver,
+                Settings.System.SPEN_REMOVED);
+        addApplicationEntries(mSpenRemove, packageName,true);
+        mSpenRemove.setOnPreferenceChangeListener(this);
+        if(!hasStylusSwitch()){
+           Preference subp= findPreference(getResources().getString(R.string.gestures_subcat_key));
+           if(subp!=null && subp instanceof PreferenceCategory){
+               PreferenceCategory cat = (PreferenceCategory) subp;
+               cat.removePreference(mSpenRemove);
+               cat.removePreference(mSpenInsert);
+          }
+        }
     }
 
     @Override
@@ -156,6 +181,14 @@ public class StylusGestures extends SettingsPreferenceFragment implements
             Settings.System.putString(mResolver,
                     Settings.System.GESTURES_DOUBLE_TAP, packageName);
             setPrefValue(mSwipeDouble, packageName);
+        }else if (preference == mSpenInsert) {
+            Settings.System.putString(mResolver,
+                    Settings.System.SPEN_INSERTED, packageName);
+            setPrefValue(mSpenInsert, packageName);
+        }else if (preference == mSpenRemove) {
+            Settings.System.putString(mResolver,
+                    Settings.System.SPEN_REMOVED, packageName);
+            setPrefValue(mSpenRemove, packageName);
         }
 
         return false;
@@ -194,8 +227,10 @@ public class StylusGestures extends SettingsPreferenceFragment implements
         }
 
     }
-
     private void addApplicationEntries(ListPreference pref, String packageName) {
+        addApplicationEntries(pref,packageName,false);
+    }
+    private void addApplicationEntries(ListPreference pref, String packageName,boolean noBack) {
         PackageManager pm = this.getPackageManager();
         Resources resources = mContext.getResources();
 
@@ -206,6 +241,11 @@ public class StylusGestures extends SettingsPreferenceFragment implements
 
         List<String> entryList = new ArrayList<String> (Arrays.asList(actionNames));
         List<String> entryListValue = new ArrayList<String> (Arrays.asList(actionValues));
+        if(noBack){
+           int idx= entryList.indexOf(resources.getString(R.string.gestures_action_back));
+           entryList.remove(idx);
+           entryListValue.remove(idx);
+        }
         Map<String, String> prefMap = new TreeMap<String, String>();
 
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
@@ -248,5 +288,8 @@ public class StylusGestures extends SettingsPreferenceFragment implements
             list2.add(entry.getKey().toString());
             list1.add(entry.getValue().toString());
         }
+    }
+    private boolean hasStylusSwitch(){
+        return getResources().getBoolean(com.android.internal.R.bool.config_stylusSwitch);
     }
 }

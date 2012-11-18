@@ -24,7 +24,8 @@
             android:title="@string/enable_spen_title_head" />
     </PreferenceCategory>
     <!-- Gesture Actions -->
-    <PreferenceCategory android:title="@string/gestures_subcat_title" >
+    <PreferenceCategory android:title="@string/gestures_subcat_title"
+        android:key="@string/gestures_subcat_key" >
         <ListPreference
             android:dependency="enable_spen"
             android:entries="@array/gestures_entries"
@@ -67,6 +68,20 @@
             android:key="gestures_double"
             android:persistent="false"
             android:title="@string/gestures_double_spen_title_head" />
+        <ListPreference
+            android:dependency="enable_spen"
+            android:entries="@array/gestures_entries"
+            android:entryValues="@array/gestures_values"
+            android:key="spen_removed"
+            android:persistent="false"
+            android:title="@string/spen_removed_title_head" />
+         <ListPreference
+            android:dependency="enable_spen"
+            android:entries="@array/gestures_entries"
+            android:entryValues="@array/gestures_values"
+            android:key="spen_inserted"
+            android:persistent="false"
+            android:title="@string/spen_inserted_title_head" />
     </PreferenceCategory>
 
 </PreferenceScreen>
